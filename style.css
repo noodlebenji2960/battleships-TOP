@@ -26,42 +26,22 @@
 
 html{
     height: 100%;
-    margin: 0px;
-    padding: 0px;
+    justify-content: center;
+    align-content: center;
+    display: flex;
 }
 
 body{
-    background: url("./img/water_web.png");
+    background: url("./img/water_webs.jpg");
     background-color: rgb(217, 217, 217);
     background-blend-mode: multiply;
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
     overflow: hidden;
-}
-
-#spinner{
-    animation: spin 1s linear infinite;
-    color: red;
-}
-  
-@keyframes spin {
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-.inline{
-display: flex;
-}
-.center{
-flex:left;
-}
-.spinner i{
-margin-top: 10px;
-margin-left: 50px;
-
-
+    opacity: 0;
+    transition: opacity 500ms;
+    visibility: hidden;
 }
 
 main{

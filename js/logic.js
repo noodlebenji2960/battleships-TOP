@@ -1,10 +1,10 @@
 export let gameStates = ["init", "placement", "playing", "endGame"]
 
-export let shipType = [     {type: "carrier", length: 5, imgURL:"img/1.svg", audio:new Audio()},
-                            {type: "battleship", length: 4, imgURL:"img/4.svg", audio:new Audio},
-                            {type: "destroyer", length: 3, imgURL:"img/5.svg", audio:new Audio("audio/destroyer.mp3")},
-                            {type: "submarine", length: 3, imgURL:"img/6.svg", audio:new Audio ("audio/submarine.mp3")},
-                            {type: "patrolboat", length: 2, imgURL:"img/2.svg", audio:new Audio("audio/patrolboat.mp3")}
+export let shipType = [     {type: "carrier", length: 5, imgURL:"img/1.svg"},
+                            {type: "battleship", length: 4, imgURL:"img/4.svg"},
+                            {type: "destroyer", length: 3, imgURL:"img/5.svg"},
+                            {type: "submarine", length: 3, imgURL:"img/6.svg"},
+                            {type: "patrolboat", length: 2, imgURL:"img/2.svg"}
                 ]
 
 export class Ship{
