@@ -1,6 +1,6 @@
 @font-face {
     font-family: "Army Buster";
-    src: url("Army Buster.otf") format("opentype");
+    src: url("./Army Buster.otf") format("opentype");
 }
 
 :root{
@@ -31,7 +31,7 @@ html{
 body{
     height: 100%;
     width: 100%;
-    background: url("/img/water_web.png");
+    background: url("./img/water_web.png");
     background-color: rgb(217, 217, 217);
     background-blend-mode: multiply;
     background-repeat: no-repeat;
@@ -153,7 +153,7 @@ main{
 
 #enemyBoard{
     grid-area: 2/2/3/3;
-    cursor: url(/img/crosshair-cursor.png) 12.5 12.5, auto;
+    cursor: url("./img/crosshair-cursor.png") 12.5 12.5, auto;
 }
 
 #playerStatus{
@@ -241,23 +241,23 @@ main{
 }
 
 .carrier{
-    -webkit-mask: url("img/1.svg") no-repeat center / contain;
+    -webkit-mask: url(".img/1.svg") no-repeat center / contain;
 }
 
 .battleship{
-    -webkit-mask: url("img/5.svg") no-repeat center / contain;
+    -webkit-mask: url("./img/5.svg") no-repeat center / contain;
 }
 
 .destroyer{
-    -webkit-mask: url("img/3.svg") no-repeat center / contain;
+    -webkit-mask: url("./img/3.svg") no-repeat center / contain;
 }
 
 .submarine{
-    -webkit-mask: url("img/6.svg") no-repeat center / contain;
+    -webkit-mask: url("./img/6.svg") no-repeat center / contain;
 }
 
 .patrolboat{
-    -webkit-mask: url("img/2.svg") no-repeat center / contain;
+    -webkit-mask: url("./img/2.svg") no-repeat center / contain;
 }
 
 .skull{
@@ -265,7 +265,7 @@ main{
     position: absolute;
     height: 50px;
     width: 50px;
-    background-image: url("img/skull.svg");
+    background-image: url("./img/skull.svg");
     visibility: hidden;
 }
 
@@ -579,8 +579,8 @@ input:focus-within{
   border: none;
   cursor: pointer;
   background-color: var(--color1);
-  -webkit-mask-image: url("img/volumeOn.svg");
-  mask-image: url("img/volumeOn.svg");
+  -webkit-mask-image: url("./img/volumeOn.svg");
+  mask-image: url("./img/volumeOn.svg");
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
 }
@@ -592,8 +592,8 @@ input:focus-within{
   border: none;
   cursor: pointer;
   background-color: var(--color1);
-  -webkit-mask-image: url("img/musicOff.svg");
-  mask-image: url("img/musicOff.svg");
+  -webkit-mask-image: url("./img/musicOff.svg");
+  mask-image: url("./img/musicOff.svg");
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   padding: 0px;
