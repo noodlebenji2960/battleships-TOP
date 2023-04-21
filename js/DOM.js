@@ -797,8 +797,10 @@ function hideFriendly(e){
     }
     function remove(){
         document.getElementById("playerOverlay").classList.remove("hideFriendly")
+        document.getElementById("playerBoard").style.opacity=1
     }
     function add(){
         document.getElementById("playerOverlay").classList.add("hideFriendly")
+        document.getElementById("playerBoard").style.opacity=0
     }
 }
