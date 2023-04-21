@@ -271,7 +271,7 @@ main{
 }
 
 .carrier{
-    -webkit-mask: url(".img/1.svg") no-repeat center / contain;
+    -webkit-mask: url("./img/1.svg") no-repeat center / contain;
 }
 
 .battleship{
