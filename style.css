@@ -189,6 +189,10 @@ main{
     margin: 5px;
 }
 
+#enemyStatus label{
+    font-size: 0.6em;
+}
+
 #enemyStatus, #playerStatus{
     height: 100%;
     border: 3px solid var(--color1);
@@ -299,9 +303,11 @@ main{
     color: var(--color2);
 }
 
-.playerSquare:hover, .enemySquare:hover{
-    background-color: var(--color1);
-    color: var(--color2);
+@media (min-width:961px)  {
+    .playerSquare:hover, .enemySquare:hover{
+        background-color: var(--color1);
+        color: var(--color2);
+    }
 }
 
 .enemySquare:active{
@@ -334,7 +340,7 @@ main{
 .hit:before, .hit:after, .miss:before, .miss:after {
     position: absolute;
     content: ' ';
-    height: 40px;
+    height: var(--squareSize);
     width: 2px;
 }
 
