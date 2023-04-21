@@ -458,7 +458,7 @@ main{
 }
 
 #enemyOverlay{
-    grid-area: 2/2/3/4;
+    grid-area: 2/2/3/3;
 }
 
 .logo::before{
