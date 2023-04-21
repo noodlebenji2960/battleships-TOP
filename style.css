@@ -31,7 +31,7 @@ html{
 body{
     height: 100%;
     width: 100%;
-    background: url("/img/water_web.webp");
+    background: url("/img/water_web.png");
     background-color: rgb(217, 217, 217);
     background-blend-mode: multiply;
     background-repeat: no-repeat;
