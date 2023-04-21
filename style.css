@@ -1,0 +1,613 @@
+@font-face {
+    font-family: "Army Buster";
+    src: url("Army Buster.otf") format("opentype");
+}
+
+:root{
+    --color0: rgba(255, 255, 255, 0.4);
+    --color1: rgba(255, 255, 255, 0.7);
+    --color2: rgba(58, 147, 199, 0.7);
+    --color3: rgba(255, 0, 0, 0.4);
+    --color4: rgba(146, 214, 0, 0.6);
+    --color5: rgba(58, 147, 199, 1);
+    --color5: rgb(255, 47, 0, 1);
+    --color6: rgba(58, 147, 199, 1);
+    font-size: 22px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+@media (min-width:280px)  { /*smartphones, iPhone, portrait*/ :root{ --squareSize: 23px;}}
+@media (min-width:320px)  { /*smartphones, iPhone, portrait*/ :root{ --squareSize: 28px;}}
+@media (min-width:481px)  { /*portrait e-readers (Nook/Kindle), smaller tablets*/ :root{ --squareSize: 40px;}}
+@media (min-width:641px)  { /*portrait tablets, portrait iPad, landscape e-readers*/ :root{ --squareSize: 45px;}}
+@media (min-width:961px)  {:root{ --squareSize: 45px;}}
+@media (min-width:1025px) { /* big landscape tablets, laptops, and desktops */ }
+@media (min-width:1281px) { /* hi-res laptops and desktops */ }
+
+html{
+    height: 100%;
+}
+
+body{
+    height: 100%;
+    width: 100%;
+    background: url("/img/water_web.webp");
+    background-color: rgb(217, 217, 217);
+    background-blend-mode: multiply;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    margin: 3px;
+}
+
+main{
+    height: 100%;
+    display: grid;
+    grid-template-rows: min-content min-content min-content;
+}
+
+
+
+.radar{
+    grid-area: 2/2/3/3;
+    height: calc(var(--squareSize)*10);
+    width: calc(var(--squareSize)*10);
+    position: absolute;
+    border: 1px solid var(--color1);
+    border-radius: 50%;
+    box-sizing: border-box;
+    background-image:
+    repeating-radial-gradient(var(--color1), var(--color1) 1px, rgba(0, 0, 0, 0)3px, rgba(0, 0, 0, 0) var(--squareSize));
+    background-size: cover;
+    z-index: -1;
+    pointer-events: none;
+    margin-left: var(--squareSize);
+}
+
+.radarScanner{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    border-radius: 100%;
+    z-index: -1;
+    animation: spin 4000ms linear infinite;
+    background: conic-gradient(var(--color4), transparent, transparent);
+    pointer-events: none;
+    margin: 0px;
+    opacity: 70%;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+#enemyContainer, #playerContainer{
+    display: grid;
+    grid-template-rows: auto var(--squareSize);
+    width: min-content;
+    user-select: none;
+    margin: auto;
+}
+
+#enemyContainer{
+    grid-template-rows: var(--squareSize) auto;
+    align-items: end;
+    justify-items: left;
+}
+
+#playerContainer{
+    grid-area: 3/1/4/2;
+    grid-template-columns: var(--squareSize) auto auto; 
+
+}
+@media (min-width:961px)  {#playerContainer{transform: scale(122%) translateY(-60px) perspective(800px) rotateX(45deg);}}
+
+.playerxAxis, .playeryAxis, .enemyxAxis, .enemyyAxis{
+    display: grid;
+    background-color: var(--color1);
+    pointer-events: none;
+}
+
+.playerxAxis, .enemyxAxis{
+    grid-template-rows: auto;
+    grid-template-columns: repeat(10, var(--squareSize));
+}
+
+.playerxAxis{
+    grid-area: 2/2/3/3;
+}
+
+.enemyxAxis{
+    grid-area: 1/2/2/3;
+}
+
+.enemyyAxis, .playeryAxis{
+    grid-template-rows: repeat(10, var(--squareSize));
+    grid-template-columns: auto;
+}
+
+.playeryAxis{
+    grid-area: 1/1/2/2;
+}
+
+.enemyyAxis{
+    grid-area: 2/1/3/2;
+}
+
+#playerBoard, #enemyBoard{
+    display: grid;
+    grid-template-columns: repeat(10, var(--squareSize));
+    grid-template-rows: repeat(10, var(--squareSize));
+    transition: opacity 2s;
+}
+
+#playerBoard{
+    grid-area: 1/2/2/3;
+    background-image: linear-gradient(230deg, transparent, transparent, var(--color1));
+}
+
+#enemyBoard{
+    grid-area: 2/2/3/3;
+    cursor: url(/img/crosshair-cursor.png) 12.5 12.5, auto;
+}
+
+#playerStatus{
+    grid-area: 1/3/3/4;
+    background-image: linear-gradient(35deg, transparent, var(--color1));
+    justify-content: center;
+    gap: 10px;
+    grid-template-rows: repeat(5, auto) var(--squareSize);
+    box-sizing: border-box;
+}
+
+#enemyStatus{
+    grid-area: 1/3/3/4;
+    display: grid;
+    grid-template-rows: var(--squareSize) auto;
+    background-image: linear-gradient(300deg, var(--color1) 1px, transparent);
+}
+
+#enemyStatus input[type="checkbox"]{
+    height: 20px;
+    width: 20px;
+    margin: 5px;
+}
+
+#enemyStatus, #playerStatus{
+    height: 100%;
+    border: 3px solid var(--color1);
+    box-sizing: border-box;
+    display: grid;
+    transition: width 1s;
+    width: 0px;
+    overflow: hidden;
+    color: #ffffff;
+}
+
+#playerStatus button{
+    grid-area: 6/1/7/2;
+    height: var(--squareSize);
+    background-color: var(--color1);
+    border: none;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: bold;
+    color: var(--color2);
+    cursor: pointer;
+    border: 3px var(--color0) solid;
+    box-sizing: border-box;
+}
+
+#playerStatus button:hover{
+ background-color: white;
+}
+
+#playerStatus button:active{
+    background-color: var(--color0);
+   }
+
+#enemyStatus div, #playerStatus div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ship{
+    height: 40px;
+    background-color: #ffffff;
+    cursor: pointer;
+    transition: 1s opacity 1s;
+    opacity: 0%;
+}
+
+.ship:not(#playerStatus .ship){
+    pointer-events: none;
+}
+
+.ship:hover{
+    background-color: var(--color6);
+}
+
+.ship:active{
+    background-color: var(--color1);
+}
+
+.shipSelected{
+    background-color: var(--color6);
+}
+
+.carrier{
+    -webkit-mask: url("img/1.svg") no-repeat center / contain;
+}
+
+.battleship{
+    -webkit-mask: url("img/5.svg") no-repeat center / contain;
+}
+
+.destroyer{
+    -webkit-mask: url("img/3.svg") no-repeat center / contain;
+}
+
+.submarine{
+    -webkit-mask: url("img/6.svg") no-repeat center / contain;
+}
+
+.patrolboat{
+    -webkit-mask: url("img/2.svg") no-repeat center / contain;
+}
+
+.skull{
+    pointer-events: none;
+    position: absolute;
+    height: 50px;
+    width: 50px;
+    background-image: url("img/skull.svg");
+    visibility: hidden;
+}
+
+.playerSquare, .enemySquare{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--squareSize);
+    width: var(--squareSize);
+    border: 1px solid var(--color0);
+    box-sizing: border-box;
+    color: rgba(0, 0, 0, 0);
+    font-weight: bold;
+}
+
+.playerSquare{
+    cursor: pointer;
+}
+
+.playerxAxis .playerSquare, .playeryAxis .playerSquare, .enemyxAxis .enemySquare, .enemyyAxis .enemySquare{
+    color: var(--color2);
+}
+
+.playerSquare:hover, .enemySquare:hover{
+    background-color: var(--color1);
+    color: var(--color2);
+}
+
+.enemySquare:active{
+    border: none;
+    background-color: var(--color3);
+    color: var(--color1);
+}
+
+.playerSquare:active{
+    background-color: var(--color1);
+    border: 5px solid var(--color3)
+}
+
+.playerAxisMarked, .enemyAxisMarked{
+    background-color: var(--color1);
+}
+
+.placement{
+    background-color: var(--color4);
+}
+
+.friendly{
+    background-color: var(--color4);
+}
+
+.error{
+    background-color: rgba(255, 0, 0, 0.3);
+}
+
+.hit:before, .hit:after, .miss:before, .miss:after {
+    position: absolute;
+    content: ' ';
+    height: 40px;
+    width: 2px;
+}
+
+.hit:before {
+    transform: rotate(45deg);
+    background-color: #ff0000;
+}
+.hit:after {
+    transform: rotate(-45deg);
+    background-color: #ff0000;
+}
+
+.miss:before {
+    transform: rotate(45deg);
+    background-color: #ffffff;
+}
+.miss:after {
+    transform: rotate(-45deg);
+    background-color: #ffffff;
+}
+
+#message{
+    height: 45px;
+    width: calc(var(--squareSize)*11);
+    box-sizing: border-box;
+    grid-area: 2/1/3/2;
+    border: 3px solid var(--color1);
+    background-color: var(--color1);
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 0.6em;
+    transition: width 1s;
+    margin: auto;
+}
+
+#playerOverlay, #enemyOverlay{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    background-color: var(--color1);
+    font-size: 1em;
+    text-align: center;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: 100%;
+    overflow: hidden;
+}
+
+.collapsed{
+    height: 0%;
+    animation-name: collapse;
+    animation-duration: 1000ms;
+    animation-iteration-count: 1;
+    animation-timing-function: ease;
+    animation-fill-mode: forwards;
+}
+
+@keyframes collapse {
+    0% {
+      height: 100%;
+    }
+    100% {
+      height: 0%;
+      padding: 0px;
+    }
+  }
+
+.expanded{
+    height: 100%;
+    animation-name: expand;
+    animation-duration: 1000ms;
+    animation-iteration-count: 1;
+    animation-timing-function: ease;
+    animation-fill-mode: forwards;
+}
+  
+@keyframes expand {
+  0% {
+    height: 0%;
+  }
+  100% {
+    height: 100%;
+    padding: 25px;
+  }
+}
+
+.hideFriendly{
+    height: 100%;
+    animation-name: expand;
+    animation-duration: 100ms;
+    animation-iteration-count: 1;
+    animation-timing-function: ease;
+    animation-fill-mode: forwards;
+}
+
+#playerOverlay{
+    grid-area: 1/2/2/3;
+}
+
+#enemyOverlay{
+    grid-area: 2/2/3/4;
+}
+
+.logo::before{
+    content: "BATTLESHIP";
+    background-image: linear-gradient(20deg, var(--color6) 15%, rgb(157, 209, 252), var(--color6));
+    background-size: 100%;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: none;
+    position: absolute;
+}
+
+.logo{
+    font-family: "Army Buster";
+
+    margin-bottom: 20px;
+    transition: opacity 1s;
+    opacity: 0;
+    text-shadow: 1px 1px 2px rgb(180, 180, 180),
+    1px 2px 2px white,
+    1px 3px 2px white,
+    1px 4px 2px white,
+    1px 5px 2px white,
+    1px 6px 2px white,
+    1px 7px 2px white,
+    1px 8px 2px white;
+}
+
+@media (min-width:280px)  { /*smartphones, iPhone, portrait*/ .logo{font-size: 2.3rem;}}
+@media (min-width:320px)  { /*smartphones, iPhone, portrait*/ .logo{font-size: 2.5rem;}}
+@media (min-width:481px)  { /*portrait e-readers (Nook/Kindle), smaller tablets*/ .logo{font-size: 4.2rem;}}
+@media (min-width:641px)  { /*portrait tablets, portrait iPad, landscape e-readers*/ .logo{font-size: 4.2rem;}}
+@media (min-width:961px)  {.logo{font-size: 4.2rem;}}
+@media (min-width:1025px) { /* big landscape tablets, laptops, and desktops */ }
+@media (min-width:1281px) { /* hi-res laptops and desktops */ }
+
+.input{
+    display: flex;
+    flex-direction: column;
+    font-size: 1.5rem;
+    transition: opacity 1s;
+    opacity: 0%;
+}
+
+.input input, .input select{
+    width: 260px;
+    height: 30px;
+    text-align: center;
+    font-size: 0.7rem;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: none;
+}
+select{
+    cursor: pointer;
+}
+input:hover, select:hover{
+    border: none;
+    outline: 3px solid var(--color6);
+}
+input:hover, select:active{
+    border: none;
+    outline: 3px solid var(--color6);
+}
+input:hover, select:focus{
+    border: none;
+    outline: 3px solid var(--color6);
+}
+input:focus-within{
+    border: none;
+    outline: 3px solid var(--color6);
+}
+
+
+.enemyDropdown{
+    background-color: var(--color1);
+    border: 2px solid white;
+    box-sizing: border-box;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--color2);
+    margin: 10px 0px 10px 0px;
+}
+
+#bigRedButton{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(var(--squareSize)*2);
+    width: calc(var(--squareSize)*2);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: bold;
+    background: radial-gradient(rgb(138, 218, 255) 10%, var(--color6));
+    border-radius: 50%;
+    z-index: 0;
+    color: white;
+    cursor: pointer;
+    transition: opacity 1s;
+    opacity: 0%;
+}
+
+@media (min-width:280px)  {
+    #bigRedButton{
+        font-size: 0.7rem;
+    }
+}
+@media (min-width:961px)  {
+    #bigRedButton{
+        font-size: 1rem;
+        box-shadow:
+        -15px 20px 20px rgba(255, 255, 255, 0.5),
+        -1px 20px 1px var(--color6),
+        -1px 25px 1px var(--color6),
+        -1px 30px 1px var(--color6),
+        20px 15px 30px rgba(0, 0, 0, 0.5);
+    }
+    .animateBigRedButton{
+        animation-name: bigButton;
+        animation-duration: 350ms;
+        animation-iteration-count: 1;
+        animation-timing-function: ease;
+        animation-fill-mode: forwards;
+      }
+      
+      @keyframes bigButton {
+        0% {
+        }
+        100% {
+          transform: translateY(26px);
+          background: radial-gradient(rgb(138, 218, 255) 0%, var(--color6));
+          box-shadow:
+          -1px 3px 5px rgb(255, 255, 255, 0.5),
+          -1px 2px 1px var(--color6),
+          -1px 3px 1px var(--color6),
+          -1px 4px 1px var(--color6),
+          5px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+      }
+}
+
+#soundControl{
+  position: absolute;
+  top: 5px;
+  right: 45px;
+  height: 40px;
+  width: 40px;
+  border: none;
+  cursor: pointer;
+  background-color: var(--color1);
+  -webkit-mask-image: url("img/volumeOn.svg");
+  mask-image: url("img/volumeOn.svg");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+#musicControl{
+  position: absolute;
+  height: var(--squareSize);
+  aspect-ratio: 1;
+  border: none;
+  cursor: pointer;
+  background-color: var(--color1);
+  -webkit-mask-image: url("img/musicOff.svg");
+  mask-image: url("img/musicOff.svg");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  padding: 0px;
+}
+
+#soundControl:hover, #musicControl:hover{
+  background-color: white;
+}
+
+#soundControl:active, #musicControl:active{
+  background-color: var(--color0);
+}
+
+.disabled{
+  pointer-events: none;
+  visibility: hidden;
+}
