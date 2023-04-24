@@ -218,12 +218,80 @@ export function createGameboards(){
         document.getElementById("playerStatus").append(shipImageDiv)
     }
 
-    //random button
-    let button = document.createElement("button")
-    button.id = "randomButton"
-    button.textContent = "Position randomly"
-    document.getElementById("playerStatus").append(button)
-    button.addEventListener("click", (e)=>{
+    //placement controls
+    let placementControls = document.createElement("div")
+    placementControls.id = "placementControls"
+    document.getElementById("playerStatus").append(placementControls)
+    let coordsInput = document.createElement("div")
+    let coordsInputX = document.createElement("select")
+    coordsInputX.id = "coordXInput"
+    let coordsInputY = document.createElement("select")
+    coordsInputY.id = "coordYInput"
+    for(let i=0;i<11;i++){
+        let optionX = document.createElement("option")
+        let optionY = document.createElement("option")
+        if(i==0){
+            optionX.textContent = "X axis"
+            optionY.textContent = "Y axis"
+        }else{
+            optionX.textContent = alphabet[i-1]
+            optionX.value = i-1
+            optionY.textContent = i
+            optionY.value = i-1
+        }
+        coordsInputX.append(optionX)
+        coordsInputY.append(optionY)
+    }
+    let placeButton = document.createElement("button")
+    placeButton.textContent = "Place"
+    placeButton.addEventListener("click", (e)=>{
+        click1.currentTime = 0;
+        click1.play()
+        let ship = shipType.find((e)=>{
+            let type = document.getElementById("message").textContent.replace(/ .*/,'').toLowerCase()
+            if(e.type==type){
+                return true
+            }
+        })
+        if(ship!==undefined){
+            document.getElementById("randomButton").classList.add("disabled")
+            let activePlayer = checkActivePlayer()
+            let ships;
+            let x = document.getElementById("coordXInput").value
+            let y = document.getElementById("coordYInput").value
+            if(newGame.checkPossible(`player${x}${y}`,ship,isVertical,activePlayer)){
+                newGame.placeShip(`player${x}${y}`, ship.type, isVertical, activePlayer)
+                renderFriendly()
+                if(activePlayer=="p1"){
+                    ships = newGame.players[0].ships
+                }else{
+                    ships = newGame.players[1].ships
+                }
+                if( newGame.players[0].ships.length==5&&newGame.players[1].ships.length==5){
+                    newGame.turn++
+                    clearBoard()
+                    renderFriendly()
+                    newGame.gameState="playing"
+                } else if(ships.length==5){
+                    newGame.turn++
+                    placementPhase()
+                    renderFriendly()
+                }else{
+                    document.getElementById(`player${ship.type}`).children[0].classList.remove("shipSelected")
+                    document.getElementById(`player${ship.type}`).children[0].classList.add("disabled")
+                    document.getElementById("message").textContent = ""
+                }
+            }else{
+                menuError.currentTime=0
+                menuError.play()
+            }
+        }
+    })
+    coordsInput.append(coordsInputX, coordsInputY, placeButton)
+    let randomButton = document.createElement("button")
+    randomButton.id = "randomButton"
+    randomButton.textContent = "Place randomly"
+    randomButton.addEventListener("click", (e)=>{
         click1.currentTime = 0;
         click1.play()
 
@@ -240,6 +308,19 @@ export function createGameboards(){
             placementPhase()
         }
     })
+    let rotateButton = document.createElement("button")
+    rotateButton.id = "randomButton"
+    rotateButton.textContent = "Rotate axis"
+    rotateButton.addEventListener("click", (e)=>{
+        if(isVertical){
+            isVertical = false
+            rotateButton.textContent = "Rotate axis(x)"
+        }else{
+            isVertical = true
+            rotateButton.textContent = "Rotate axis(y)"
+        }
+    })
+    placementControls.append(randomButton, rotateButton, coordsInput)
     //player squares
     for(let y=9;y>=0;y--){
 
@@ -264,6 +345,7 @@ export function createGameboards(){
             div.addEventListener("click", (e)=>{
                 let gameState=newGame.gameState
                 if(gameState=="placement"){
+                    let activePlayer = checkActivePlayer()
                     click1.currentTime = 0;
                     click1.play()
                     let ship = shipType.find((e)=>{
@@ -272,8 +354,8 @@ export function createGameboards(){
                             return true
                         }
                     })
-                    if(ship!==undefined){
-                        let activePlayer = checkActivePlayer()
+                    if(ship!==undefined&&newGame.checkPossible(e.target.id,ship,isVertical,activePlayer)){
+                        document.getElementById("randomButton").classList.add("disabled")
                         let ships;
                         newGame.placeShip(e.target.id, ship.type, isVertical, activePlayer)
                         renderFriendly()
@@ -296,6 +378,7 @@ export function createGameboards(){
                             document.getElementById(`player${ship.type}`).children[0].classList.add("disabled")
                             document.getElementById("message").textContent = ""
                         }
+                    }else{
                     }
                 }else{
                     menuError.currentTime=0
@@ -331,6 +414,8 @@ export function createGameboards(){
                                 id.classList.add("placement")
                             }
                         }else{
+                            let id = document.getElementById(`player${x}${y}`)
+                            id.classList.add("error")
                             for(let i=0;i<ship.length-1;i++){
                                 if(isVertical==false){
                                     x = x+1
@@ -391,6 +476,8 @@ export function createGameboards(){
                                 id.classList.add("placement")
                             }
                         }else{
+                            let id = document.getElementById(`player${x}${y}`)
+                            id.classList.add("error")
                             for(let i=0;i<ship.length-1;i++){
                                 if(isVertical==false){
                                     x = x+1
@@ -432,6 +519,8 @@ export function createGameboards(){
                                 id.classList.remove("placement")
                             }
                         }else{
+                            let id = document.getElementById(`player${x}${y}`)
+                            id.classList.remove("error")
                             for(let i=0;i<ship.length-1;i++){
                                 if(isVertical==false){
                                     x = x+1
@@ -544,14 +633,13 @@ function clearBoard(){
     }
     //reset message color
     document.getElementById("message").style.color = "black"
-    //clear button
-    document.getElementById("randomButton").style.visibility = "hidden"
+    //clear controls
+    document.getElementById("placementControls").style.visibility = "hidden"
     //clear overlays
     let playerOverlayDiv = document.getElementById("playerOverlay")
     playerOverlay.classList.add("collapsed")
     playerOverlay.classList.remove("expanded")
     playerOverlayDiv.textContent=""
-    document.getElementById("playerBoard").style.opacity = "100%"
     let enemyOverlayDiv = document.getElementById("enemyOverlay")
     enemyOverlay.classList.add("collapsed")
     enemyOverlay.classList.remove("expanded")
@@ -628,7 +716,7 @@ function placementPhase(){
         document.getElementById(`player${shipType[i].type}`).children[0].classList.remove("disabled")
     }
     clearBoard()
-    document.getElementById("randomButton").style.visibility = "visible"
+    document.getElementById("placementControls").style.visibility = "visible"
     newGame.gameState = gameStates[1]
     document.getElementById("playerStatus").style.width=`${squareSize*5}px`
     document.getElementById("enemyStatus").style.width=`${squareSize*5}px`
@@ -780,27 +868,5 @@ function renderSkulls(){
         })
     }else{
 
-    }
-}
-
-document.getElementById("hideFriendly").addEventListener("click", (e)=>hideFriendly(e))
-
-function hideFriendly(e){
-    if(e.srcElement.checked==true){
-        document.getElementById("playerOverlay").classList.add("hideFriendly")
-        document.getElementById("playerOverlay").addEventListener("mouseover", remove)
-        document.getElementById("playerBoard").addEventListener("mouseleave", add)
-    }else{
-        document.getElementById("playerOverlay").classList.remove("hideFriendly")
-        document.getElementById("playerOverlay").removeEventListener("mouseover", remove)
-        document.getElementById("playerBoard").removeEventListener("mouseleave", add)
-    }
-    function remove(){
-        document.getElementById("playerOverlay").classList.remove("hideFriendly")
-        document.getElementById("playerBoard").style.opacity=1
-    }
-    function add(){
-        document.getElementById("playerOverlay").classList.add("hideFriendly")
-        document.getElementById("playerBoard").style.opacity=0
     }
 }
