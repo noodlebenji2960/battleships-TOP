@@ -48,6 +48,7 @@ main{
     height: 100%;
     display: grid;
     grid-template-rows: min-content min-content min-content;
+    grid-template-columns: min-content;
 }
 
 
@@ -92,21 +93,22 @@ main{
 
 #enemyContainer, #playerContainer{
     display: grid;
-    grid-template-rows: auto var(--squareSize);
     width: min-content;
     user-select: none;
     margin: auto;
 }
 
 #enemyContainer{
-    grid-template-rows: var(--squareSize) auto;
+    grid-template-rows: var(--squareSize) calc(var(--squareSize)*10);
+    grid-template-columns: var(--squareSize) calc(var(--squareSize)*10) min-content;
     align-items: end;
     justify-items: left;
 }
 
 #playerContainer{
     grid-area: 3/1/4/2;
-    grid-template-columns: var(--squareSize) auto auto; 
+    grid-template-rows: calc(var(--squareSize)*10) var(--squareSize);
+    grid-template-columns: var(--squareSize) calc(var(--squareSize)*10) min; 
 
 }
 @media (min-width:961px)  {
@@ -168,15 +170,15 @@ main{
 }
 
 #playerStatus{
-    grid-area: 1/3/3/4;
+    grid-area: 1/3/2/4;
     background-image: linear-gradient(35deg, transparent, var(--color1));
     justify-content: center;
-    gap: 10px;
-    grid-template-rows: repeat(5, auto) calc(var(--squareSize)*3);
+    grid-template-rows: repeat(7, var(--squareSize)) calc(var(--squareSize)*3);
     box-sizing: border-box;
 }
 
 #placementControls{
+    grid-area: 8/1/9/2;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -189,7 +191,7 @@ main{
 }
 
 #enemyStatus{
-    grid-area: 1/3/3/4;
+    grid-area: 2/3/3/4;
     display: grid;
     grid-template-rows: var(--squareSize) auto;
     background-image: linear-gradient(300deg, var(--color1) 1px, transparent);
@@ -204,6 +206,57 @@ main{
     width: 0px;
     overflow: hidden;
     color: #ffffff;
+}
+
+#menuControl{
+    visibility: hidden;
+}
+
+@media (max-width:560px){
+    #enemyStatus, #playerStatus{
+        margin-left: calc(var(--squareSize)*5);
+        border: none;
+        z-index: 1;
+        visibility: hidden;
+    }
+    #enemyStatus{
+        grid-area: 2/2/3/3;
+        height: calc(var(--squareSize)*10);
+        background-image: linear-gradient(300deg, var(--color1) 1px, var(--color0));
+    }
+    #playerStatus{
+        grid-area: 1/2/3/3;
+        height: calc(var(--squareSize)*10);
+        background-image: linear-gradient(35deg, var(--color0), var(--color1));
+    }
+    #menuControl{
+        visibility: visible;
+        grid-area: 2/1/3/2;
+        height: var(--squareSize);
+        aspect-ratio: 1;
+        border: none;
+        cursor: pointer;
+        -webkit-mask-image: url("./img/waves.svg");
+        mask-image: url("./img/waves.svg");
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        padding: 0px;
+    }
+
+    .animateMenuControl{
+        animation-name: flash;
+        animation-duration: 2000ms;
+        animation-iteration-count: infinite;
+        animation-timing-function: ease-in-out;
+        animation-fill-mode: both;
+    }
+    
+    @keyframes flash {
+        50% {
+            background-color: var(--color5);
+        }
+
+      }
 }
 
 #playerStatus button, select{
@@ -235,11 +288,9 @@ main{
 }
 
 .ship{
-    height: 40px;
+    height: var(--squareSize);
     background-color: #ffffff;
     cursor: pointer;
-    transition: 1s opacity 1s;
-    opacity: 0%;
 }
 
 .ship:not(#playerStatus .ship){
@@ -281,10 +332,9 @@ main{
 .skull{
     pointer-events: none;
     position: absolute;
-    height: 50px;
-    width: 50px;
+    height: var(--squareSize);
+    width: var(--squareSize);
     background-image: url("./img/skull.svg");
-    visibility: hidden;
 }
 
 .playerSquare, .enemySquare{
@@ -380,7 +430,7 @@ main{
     text-align: center;
     font-size: 0.6em;
     transition: width 1s;
-    margin: auto;
+    width: 100%;
 }
 
 #playerOverlay, #enemyOverlay{
@@ -629,4 +679,5 @@ input:focus-within{
 .disabled{
   pointer-events: none;
   visibility: hidden;
+  opacity: 0%;
 }

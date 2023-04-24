@@ -86,7 +86,7 @@ export function createGameboards(){
         
         let skull = document.createElement("div")
         skull.id = `enemy${shipType[i].type}Skull`
-        skull.classList.add("skull")
+        skull.classList.add("skull", "disabled")
         shipImageDiv.append(shipImage, skull)
         document.getElementById("enemyStatus").append(shipImageDiv)
     }
@@ -165,7 +165,11 @@ export function createGameboards(){
             retryButton.textContent = "play again?"
             retryButton.addEventListener("click",(e)=>{
                 clearBoard()
+                let P1name = newGame.players[0].name
+                let P2name = newGame.players[1].name
                 newGame = new GameController()
+                newGame.players[0].name = P1name
+                newGame.players[1].name = P2name
                 newGame.initialize()
                 placementPhase()
             })
@@ -214,6 +218,7 @@ export function createGameboards(){
 
         let skull = document.createElement("div")
         skull.id = `player${shipType[i].type}Skull`
+        skull.classList.add("skull", "disabled")
         shipImageDiv.append(shipImage, skull)
         document.getElementById("playerStatus").append(shipImageDiv)
     }
@@ -634,7 +639,7 @@ function clearBoard(){
     //reset message color
     document.getElementById("message").style.color = "black"
     //clear controls
-    document.getElementById("placementControls").style.visibility = "hidden"
+    document.getElementById("placementControls").classList.add("disabled")
     //clear overlays
     let playerOverlayDiv = document.getElementById("playerOverlay")
     playerOverlay.classList.add("collapsed")
@@ -712,16 +717,16 @@ function renderShots(){
 
 function placementPhase(){
     newGame.gameState = "placement"
+    document.getElementById("menuControl").classList.remove("disabled")
+    document.getElementById("menuControl").classList.add("animateMenuControl")
     for(let i=0;i<shipType.length;i++){
         document.getElementById(`player${shipType[i].type}`).children[0].classList.remove("disabled")
     }
     clearBoard()
-    document.getElementById("placementControls").style.visibility = "visible"
+    document.getElementById("placementControls").classList.remove("disabled")
     newGame.gameState = gameStates[1]
     document.getElementById("playerStatus").style.width=`${squareSize*5}px`
     document.getElementById("enemyStatus").style.width=`${squareSize*5}px`
-    document.getElementById("message").style.width= `${squareSize*16}px`
-    document.querySelectorAll(".ship").forEach((e)=>{e.style.opacity="100%"})
 
     let enemyOverlay = document.getElementById("enemyOverlay");
     enemyOverlay.classList.add("collapsed")
@@ -744,7 +749,7 @@ function placementPhase(){
             enemyOverlay.classList.remove("collapsed")
             enemyOverlay.classList.add("expanded")
             setTimeout((e)=>{
-                enemyOverlay.textContent = "Place each ship individually or position your fleet randomly (right-click to rotate)"
+                enemyOverlay.textContent = "Place each ship individually or position your fleet randomly"
                 newGame.updateMessage(`Awaiting orders to move into position, Admiral ${activePlayerName}`)
             },1000)
         },1000)
@@ -871,10 +876,23 @@ function renderSkulls(){
     if(activePlayer=="p1"){
         newGame.players[1].ships.forEach((e)=>{
             if(e.sunk==true){
-                document.getElementById(`enemy${e.type}Skull`).style.visibility = "visible"
+                document.getElementById(`enemy${e.type}Skull`).classList.remove("disabled")
             }
         })
     }else{
 
     }
 }
+
+document.getElementById("menuControl").addEventListener("click", (e)=>{
+    e.target.classList.remove("animateMenuControl")
+    if(document.getElementById("menuControl").getAttribute("data")=="off"){
+        document.getElementById("enemyStatus").style.visibility="visible"
+        document.getElementById("playerStatus").style.visibility="visible"
+        document.getElementById("menuControl").setAttribute("data", "on")
+    }else{
+        document.getElementById("enemyStatus").style.visibility="hidden"
+        document.getElementById("playerStatus").style.visibility="hidden"
+        document.getElementById("menuControl").setAttribute("data", "off")
+    }
+})
