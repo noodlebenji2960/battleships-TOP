@@ -231,8 +231,8 @@ export function createGameboards(){
         let optionX = document.createElement("option")
         let optionY = document.createElement("option")
         if(i==0){
-            optionX.textContent = "X axis"
-            optionY.textContent = "Y axis"
+            optionX.textContent = "X"
+            optionY.textContent = "Y"
         }else{
             optionX.textContent = alphabet[i-1]
             optionX.value = i-1
@@ -768,32 +768,7 @@ export function setupPhase(){
     bigRedButton.textContent = "START"
     playerOverlay.append(bigRedButton)
     setTimeout((e)=>{bigRedButton.style.opacity = "100%"},1000)
-    bigRedButton.addEventListener("click", (e)=>{
-        if((nameP1Input.value&&dropdown.value=="Computer")||(nameP1Input.value&&dropdown.value=="Human"&&nameP2Input.value)){
-            bigRedButton.classList.add("animateBigRedButton")
-            setTimeout((e)=>{
-                bigRedButton.style.visibility = "hidden"
-                placementPhase()
-            },500)
-    }else{
-        bigRedButton.classList.add("animateBigRedButton")
-        setTimeout((e)=>{
-            menuError.currentTime=0
-            menuError.play()
-            if(!nameP1Input.value){
-                newGame.updateMessage("Player 1 name required")
-                document.getElementById("message").style.color = "red"
-            }else if(dropdown.value=="Select Player 2:"){
-                newGame.updateMessage("Choose Player 2")
-                document.getElementById("message").style.color = "red"
-            }else{
-                newGame.updateMessage("Player 2 name required")
-                document.getElementById("message").style.color = "red"
-            }
-            bigRedButton.classList.remove("animateBigRedButton")
-        }, 500)
-    }
-    })
+    bigRedButton.addEventListener("click", start)
 
     let enemyOverlay = document.getElementById("enemyOverlay");
     enemyOverlay.classList.remove("collapsed")
@@ -811,8 +786,11 @@ export function setupPhase(){
     nameP1Input.maxLength = 16
     nameP1Input.placeholder = "PLAYER 1 NAME"
     nameP1Input.setAttribute("autofocus","")
-    nameP1Input.addEventListener("change", (e)=>{
+    nameP1Input.addEventListener("keypress", (e)=>{
         newGame.players[0].name = nameP1Input.value.charAt(0).toUpperCase()+nameP1Input.value.slice(1)
+        if(e.key=="Enter"){
+            start()
+        }
     })
     let nameP2Input = document.createElement("input")
     nameP2Input.id="p1NameInput"
@@ -820,9 +798,39 @@ export function setupPhase(){
     nameP2Input.maxLength = 16
     nameP2Input.placeholder = "PLAYER 2 NAME"
     nameP2Input.style.visibility = "hidden"
-    nameP2Input.addEventListener("change", (e)=>{
+    nameP2Input.addEventListener("keypress", (e)=>{
         newGame.players[1].name = nameP2Input.value.charAt(0).toUpperCase()+nameP2Input.value.slice(1)
+        if(e.key=="Enter"){
+            start()
+        }
     })
+
+    function start(){
+        if((nameP1Input.value&&dropdown.value=="Computer")||(nameP1Input.value&&dropdown.value=="Human"&&nameP2Input.value)){
+            bigRedButton.classList.add("animateBigRedButton")
+            setTimeout((e)=>{
+                bigRedButton.style.visibility = "hidden"
+                placementPhase()
+            },500)
+        }else{
+            bigRedButton.classList.add("animateBigRedButton")
+            setTimeout((e)=>{
+                menuError.currentTime=0
+                menuError.play()
+                if(!nameP1Input.value){
+                    newGame.updateMessage("Player 1 name required")
+                    document.getElementById("message").style.color = "red"
+                }else if(dropdown.value=="Select Player 2:"){
+                    newGame.updateMessage("Choose Player 2")
+                    document.getElementById("message").style.color = "red"
+                }else{
+                    newGame.updateMessage("Player 2 name required")
+                    document.getElementById("message").style.color = "red"
+                }
+                bigRedButton.classList.remove("animateBigRedButton")
+            }, 500)
+        }
+    }
     
     let dropdown = document.createElement("select")
     dropdown.id = "setPlayer2Dropdown"
