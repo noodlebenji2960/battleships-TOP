@@ -32,12 +32,10 @@ export class Player{
     constructor(id, color, type, name){
         this.id = id
         this.name = name
-        this.color = color
         this.type = type
         this.ships = []
     }
 }
-
 export class GameController{
     constructor(){
         this.gameState = null
@@ -50,8 +48,9 @@ export class GameController{
     initialize(playerType){
         if(playerType=="human"){
             this.PvPinitialize()
-        }else{
+        }else if(playerType=="ai"){
             this.PvEinitialize()
+        }else{
         }
 
         for(let x=0;x<=9;x++){
@@ -65,10 +64,11 @@ export class GameController{
         this.turn++
     }
     placeShip(id, type, isVertical, activePlayer){
+        console.log(this)
         let ship = new Ship(type, activePlayer)
         let x = Number(id.charAt(6))
         let y = Number(id.charAt(7))
-        if((x+ship.length<=10&&isVertical==false)||y+1-ship.length>0&&isVertical==true){
+        if(((x+ship.length<=10&&isVertical==false)||(y+1-ship.length>0&&isVertical==true))&&(this.checkPossible(id, ship, isVertical, activePlayer)==true)){
             if(activePlayer=="p1"){
                 this.players[0].ships.push(ship)
             } else {
@@ -91,25 +91,29 @@ export class GameController{
                     x = x+1
                 }
             }
+            return true
+        } else{
+            return false
         }
     }
     ai(){
         let unOccupied = []
+        let occupied = []
         for(let i=0;i<this.board.length;i++){
-            if(!this.board[i].p1Hit||!this.board[i].p1Miss){
-                let x = this.board[i].X
-                let y = this.board[i].Y
+            let x = this.board[i].X
+            let y = this.board[i].Y
+            if((this.board[i].p1Hit==false)&&(this.board[i].p1Miss==false)){
                 unOccupied.push(`${x}${y}`)
             } else{
+                occupied.push(`${x}${y}`)
             }
         }
-        let randomUnoccupiedIndex = Math.floor(Math.random()*unOccupied.length)
-        let randomUnoccupied = `enemy${unOccupied[randomUnoccupiedIndex]}`
-        if(this.recieveAttack(randomUnoccupied, "p2")==true){
-            return true
-        }else{
-            return false
+        let randomUnoccupiedIndex = Math.floor(Math.random()*99)
+        if(unOccupied.length!==0){
+            randomUnoccupiedIndex = Math.floor(Math.random()*unOccupied.length)
         }
+        let randomUnoccupied = `enemy${unOccupied[randomUnoccupiedIndex]}`
+        return this.recieveAttack(randomUnoccupied, "p2")==true
     }
     checkPossible(id, ship, isVertical, activePlayer){
         let occupied = []
@@ -200,6 +204,7 @@ export class GameController{
         let coordObj = this.board.find((ele)=>{if((ele.X==x)&&(ele.Y==y)){
             return true
         }})
+        
         if(coordObj.p1Ship==null&&activePlayer=="p2"){
             coordObj.p1Miss=true
             this.nextTurn()
@@ -228,14 +233,14 @@ export class GameController{
     PvPinitialize(){
         this.gameState = gameStates[0]
         this.players = []
-        this.players.push(new Player("p1", "blue", "human"))
-        this.players.push(new Player("p2", "red", "human"))
+        this.players.push(new Player("p1", "human"))
+        this.players.push(new Player("p2", "human"))
     }
     PvEinitialize(){
         this.gameState = gameStates[0]
         this.players = []
-        this.players.push(new Player("p1", "blue", "human"))
-        this.players.push(new Player("p2", "red", "ai"))
+        this.players.push(new Player("p1", "human"))
+        this.players.push(new Player("p2", "ai"))
     }
     checkWinner(){
         let p1Check = this.players[0].ships.every((e)=>{
@@ -248,16 +253,6 @@ export class GameController{
                 return true
             }
         });
-
-        if(p2Check == true){
-            this.winner = "p1"
-            this.updateMessage("P1 Wins!")
-        } else if(p1Check == true){
-            this.winner == "p2"
-            this.updateMessage("P2 Wins!")
-        }else{
-            return
-        }
     }
     updateMessage(string){
         document.getElementById("message").textContent = ""

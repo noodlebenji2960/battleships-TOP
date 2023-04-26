@@ -1,69 +1,12 @@
-import { GameController, gameStates } from "./logic.js"
-import { shipType } from "./logic.js"
+import { shipType, GameController, gameStates } from "./logic.js"
+import { playAudio } from "./audio.js"
+import { newGame } from "./app.js"
 
 let alphabet = "abcdefghij".split("")
 let isVertical = false
 
-//Audio
-let bgMusic =           new Audio("audio/music.mp3")
-let click1 =            new Audio("audio/click1.mp3")
-let menuError =         new Audio("audio/menuError.mp3")
-
-let launchAudio =   [   new Audio("audio/launch/rocket-launch1.mp3"),
-                        new Audio("audio/launch/rocket-launch2.mp3")
-                    ]
-let hitAudio =      [   new Audio("audio/hit/explosion1.mp3"),
-                        new Audio("audio/hit/explosion2.mp3"),
-                        new Audio("audio/hit/explosion3.mp3")
-                    ]
-let missAudio =     [   new Audio("audio/miss/splash1.mp3"),
-                        new Audio("audio/miss/splash2.mp3")
-                    ]
-
 let root = document.querySelector(":root")
 let squareSize = Number(getComputedStyle(root).getPropertyValue("--squareSize").slice(0,3))
-
-function playAudio(type){
-    if(type=="launch"){
-        return launchAudio[Math.floor(Math.random()*launchAudio.length)].play()
-    }else if(type=="hit"){
-        return hitAudio[Math.floor(Math.random()*hitAudio.length)].play()
-    }else if(type=="miss"){
-        return missAudio[Math.floor(Math.random()*missAudio.length)].play()
-    }
-    
-}
-
-document.addEventListener("click", (e)=>{
-        bgMusic.volume = 0.6
-        bgMusic.play()
-        let icon = document.getElementById("musicControl")
-        icon.style.maskImage = `url("img/musicOn.svg")`
-        icon.style.webkitMaskImage = `url("img/musicOn.svg")`
-        icon.setAttribute("data", "on")
-}, {once:true})
-
-//newGame
-let newGame = new GameController()
-newGame.initialize()
-
-//music control
-document.getElementById("musicControl").addEventListener("click", (e)=>{
-    let icon = document.getElementById("musicControl")
-    let toggle = icon.getAttribute("data")
-
-    if(toggle=="on"){
-        bgMusic.volume = 0.0
-        icon.style.maskImage = `url("img/musicOff.svg")`
-        icon.style.webkitMaskImage = `url("img/musicOff.svg")`
-        icon.setAttribute("data", "off")
-    }else if(toggle=="off"){
-        bgMusic.volume = 0.6
-        icon.style.maskImage = `url("img/musicOn.svg")`
-        icon.style.webkitMaskImage = `url("img/musicOn.svg")`
-        icon.setAttribute("data", "on")
-    }
-})
 
 export function createGameboards(){
     //enemyBoard
@@ -129,8 +72,7 @@ export function createGameboards(){
     }
     function enemyBoardClick(e){
         if(e.srcElement.classList.contains("miss")||e.srcElement.classList.contains("hit")){
-            menuError.currentTime=0
-            menuError.play()
+            playAudio("error")
             e.srcElement.addEventListener("click", enemyBoardClick, {once:true})
         }else{
             playAudio("launch")
@@ -165,12 +107,11 @@ export function createGameboards(){
             retryButton.textContent = "play again?"
             retryButton.addEventListener("click",(e)=>{
                 clearBoard()
-                let P1name = newGame.players[0].name
-                let P2name = newGame.players[1].name
+                let P1 = newGame.players[0]
+                let P2 = newGame.players[1]
                 newGame = new GameController()
-                newGame.players[0].name = P1name
-                newGame.players[1].name = P2name
-                newGame.initialize()
+                newGame.players[0] = P1
+                newGame.players[1] = P2
                 placementPhase()
             })
             playerOverlay.textContent = ""
@@ -205,8 +146,7 @@ export function createGameboards(){
         shipImage.classList.add("ship", shipType[i].type)
         shipImage.style.width = shipType[i].length * squareSize+"px"
         shipImage.addEventListener("click", (e)=>{
-            click1.currentTime = 0
-            click1.play()
+            playAudio("click")
             if(newGame.gameState=="placement"){
                 document.querySelectorAll(".ship").forEach((e)=>{e.classList.remove("shipSelected")})
                 shipImage.classList.add("shipSelected")
@@ -250,8 +190,7 @@ export function createGameboards(){
     let placeButton = document.createElement("button")
     placeButton.textContent = "Place"
     placeButton.addEventListener("click", (e)=>{
-        click1.currentTime = 0;
-        click1.play()
+        playAudio("click")
         let ship = shipType.find((e)=>{
             let type = document.getElementById("message").textContent.replace(/ .*/,'').toLowerCase()
             if(e.type==type){
@@ -287,8 +226,7 @@ export function createGameboards(){
                     document.getElementById("message").textContent = ""
                 }
             }else{
-                menuError.currentTime=0
-                menuError.play()
+                playAudio("error")
             }
         }
     })
@@ -297,8 +235,7 @@ export function createGameboards(){
     randomButton.id = "randomButton"
     randomButton.textContent = "Place randomly"
     randomButton.addEventListener("click", (e)=>{
-        click1.currentTime = 0;
-        click1.play()
+        playAudio("click")
 
         clearBoard()
 
@@ -351,8 +288,7 @@ export function createGameboards(){
                 let gameState=newGame.gameState
                 if(gameState=="placement"){
                     let activePlayer = checkActivePlayer()
-                    click1.currentTime = 0;
-                    click1.play()
+                    playAudio("click")
                     let ship = shipType.find((e)=>{
                         let type = document.getElementById("message").textContent.replace(/ .*/,'').toLowerCase()
                         if(e.type==type){
@@ -371,9 +307,8 @@ export function createGameboards(){
                         }
                         if( newGame.players[0].ships.length==5&&newGame.players[1].ships.length==5){
                             newGame.turn++
-                            clearBoard()
-                            renderFriendly()
                             newGame.gameState="playing"
+                            passDevice()
                         } else if(ships.length==5){
                             newGame.turn++
                             placementPhase()
@@ -384,10 +319,10 @@ export function createGameboards(){
                             document.getElementById("message").textContent = ""
                         }
                     }else{
+                        playAudio("error")
                     }
                 }else{
-                    menuError.currentTime=0
-                    menuError.play()
+                    playAudio("error")
                 }
             })
 
@@ -551,17 +486,16 @@ export function createGameboards(){
 }
 
 function aiTurn(){
-    playAudio("launch")
-    newGame.ai()
-    renderFriendly()
-    renderShots()
-    renderSkulls()
-    if(newGame.winner!=null){
-        document.getElementById("playerOverlay").style.visibility = "visible"
-        playerOverlay.textContent = `GAME OVER, The enemy has defeated your fleet Admiral ${newGame.players[0].name}!`
-        document.getElementById("enemyOverlay").style.visibility = "visible"
-        newGame.gameState = "endGame"
-    }
+        newGame.ai()
+        renderFriendly()
+        if(newGame.winner!=null){
+            document.getElementById("playerOverlay").style.visibility = "visible"
+            playerOverlay.textContent = `GAME OVER, The enemy has defeated your fleet Admiral ${newGame.players[0].name}!`
+            document.getElementById("enemyOverlay").style.visibility = "visible"
+            newGame.gameState = "endGame"
+        }
+        renderShots()
+        renderSkulls()
 }
 
 function passDevice(){
@@ -631,6 +565,10 @@ function checkActivePlayer(){
 }
 
 function clearBoard(){
+    //reset ships
+    for(let i=0;i<shipType.length;i++){
+        document.getElementById(`player${shipType[i].type}`).children[0].classList.remove("disabled")
+    }
     //clear skulls
     let enemyStatuschildren = document.getElementById("enemyStatus").children
     for(let i=0;i<enemyStatuschildren.length;i++){
@@ -745,6 +683,7 @@ function placementPhase(){
         renderFriendly()
         newGame.updateMessage("Awaiting orders Admiral "+newGame.players[checkActivePlayer().charAt(1)-1].name)
     }else{
+        document.getElementById("randomButton").classList.remove("disabled")
         setTimeout((e)=>{
             enemyOverlay.classList.remove("collapsed")
             enemyOverlay.classList.add("expanded")
@@ -792,7 +731,6 @@ export function setupPhase(){
     nameP1Input.placeholder = "PLAYER 1 NAME"
     nameP1Input.setAttribute("autofocus","")
     nameP1Input.addEventListener("keypress", (e)=>{
-        newGame.players[0].name = nameP1Input.value.charAt(0).toUpperCase()+nameP1Input.value.slice(1)
         if(e.key=="Enter"){
             start()
         }
@@ -804,7 +742,6 @@ export function setupPhase(){
     nameP2Input.placeholder = "PLAYER 2 NAME"
     nameP2Input.style.visibility = "hidden"
     nameP2Input.addEventListener("keypress", (e)=>{
-        newGame.players[1].name = nameP2Input.value.charAt(0).toUpperCase()+nameP2Input.value.slice(1)
         if(e.key=="Enter"){
             start()
         }
@@ -812,6 +749,20 @@ export function setupPhase(){
 
     function start(){
         if((nameP1Input.value&&dropdown.value=="Computer")||(nameP1Input.value&&dropdown.value=="Human"&&nameP2Input.value)){
+            if(nameP1Input.value&&dropdown.value=="human"){
+                newGame.initialize("human")
+            }else{
+                newGame.initialize("ai")
+            }
+            newGame.players[1].name = nameP2Input.value.charAt(0).toUpperCase()+nameP2Input.value.slice(1)
+            newGame.players[0].name = nameP1Input.value.charAt(0).toUpperCase()+nameP1Input.value.slice(1)
+            if(dropdown.value=="Human"){
+                nameP2Input.style.visibility = "visible"
+                newGame.players[1].type="human"
+            }else{
+                nameP2Input.style.visibility = "hidden"
+                newGame.players[1].type="ai"
+            }
             bigRedButton.classList.add("animateBigRedButton")
             setTimeout((e)=>{
                 bigRedButton.style.visibility = "hidden"
@@ -820,8 +771,7 @@ export function setupPhase(){
         }else{
             bigRedButton.classList.add("animateBigRedButton")
             setTimeout((e)=>{
-                menuError.currentTime=0
-                menuError.play()
+                playAudio("error")
                 if(!nameP1Input.value){
                     newGame.updateMessage("Player 1 name required")
                     document.getElementById("message").style.color = "red"
@@ -849,19 +799,8 @@ export function setupPhase(){
     dropdown.append(option1, option2, option3)
 
     dropdown.addEventListener("click", (e)=>{
-        click1.currentTime = 0;
-        click1.play()
+        playAudio("click")
     })
-
-    dropdown.addEventListener("change", (e)=>{
-        if(dropdown.value=="Human"){
-            nameP2Input.style.visibility = "visible"
-            newGame.players[1].type="human"
-        }else{
-            nameP2Input.style.visibility = "hidden"
-            newGame.players[1].type="ai"
-        }
-    });
 
     input.append(nameP1Input, dropdown, nameP2Input)
     
@@ -885,9 +824,13 @@ function renderSkulls(){
 }
 
 document.getElementById("menuControl").addEventListener("click", (e)=>{
+    playAudio("click")
     e.target.classList.remove("animateMenuControl")
     if(document.getElementById("menuControl").getAttribute("data")=="off"){
-        document.getElementById("enemyStatus").style.visibility="visible"
+        if(newGame.gameState!=="placement"){
+            document.getElementById("enemyStatus").style.visibility="visible"
+        }else{
+        }
         document.getElementById("playerStatus").style.visibility="visible"
         document.getElementById("menuControl").setAttribute("data", "on")
     }else{

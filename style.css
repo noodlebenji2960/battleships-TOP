@@ -218,6 +218,7 @@ main{
         border: none;
         z-index: 1;
         visibility: hidden;
+        background-color: var(--color1);
     }
     #enemyStatus{
         grid-area: 2/2/3/3;
@@ -241,6 +242,11 @@ main{
         -webkit-mask-repeat: no-repeat;
         mask-repeat: no-repeat;
         padding: 0px;
+        background-color: var(--color1)
+    }
+
+    #menuControl:hover{
+        background-color: #ffffff;
     }
 
     .animateMenuControl{
@@ -293,8 +299,13 @@ main{
     cursor: pointer;
 }
 
-.ship:not(#playerStatus .ship){
+#enemyStatus .ship{
     pointer-events: none;
+    background-color: var(--color3);
+}
+
+#playerStatus .ship{
+    background-color: var(--color4);
 }
 
 .ship:hover{
